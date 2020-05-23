@@ -24,4 +24,10 @@ public class Dao {
         }
         return user;
     }
+
+    public ResultSet list(String username){
+        String sql="select mail_id from mail where user_to=?";
+        ResultSet rs=dataBase.exeQuery(sql,username);
+        return rs;
+    }
 }

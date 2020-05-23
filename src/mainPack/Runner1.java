@@ -31,6 +31,10 @@ public class Runner1 extends Thread{
             catch (IOException e)
             {
                 e.printStackTrace();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }

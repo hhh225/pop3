@@ -5,7 +5,9 @@ import entity.User;
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class SocketHandle extends Thread{
     Socket socket;
@@ -33,6 +35,8 @@ public class SocketHandle extends Thread{
             os=socket.getOutputStream();
             PrintWriter pw=new PrintWriter(os);
             BufferedReader br=new BufferedReader(new InputStreamReader(is));
+            ObjectInputStream ois=new ObjectInputStream(is);
+            ObjectOutputStream oos=new ObjectOutputStream(os);
             pw.write("+OK Welcome\n");
             pw.flush();
             while(true){
@@ -83,9 +87,18 @@ public class SocketHandle extends Thread{
                         while (true){
                             info=br.readLine();
                             if (info.equals("list")){
+                                ArrayList<String> ids=new ArrayList<String>();
+                                ResultSet rs=dao.list(user.getUsername());
+                                while (rs.next()){
+                                    ids.add(rs.getString("mail_id"));
+                                }
+                                oos.writeObject(ids);
+                                oos.flush();
+                            }
+                            else if (info.indexOf("retr")==0){
+                                String id=info.substring(5);
 
                             }
-                            break;
                         }
                         break;
                 }
