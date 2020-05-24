@@ -1,6 +1,7 @@
 package mainPack;
 
 import databaseAccess.Dao;
+import entity.Email;
 import entity.User;
 
 import java.io.*;
@@ -8,6 +9,7 @@ import java.net.Socket;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SocketHandle extends Thread{
     Socket socket;
@@ -97,8 +99,28 @@ public class SocketHandle extends Thread{
                             }
                             else if (info.indexOf("retr")==0){
                                 String id=info.substring(5);
+                                Email email =  dao.getEmail(id);
+                                HashMap<String,String> hashMap=new HashMap<String, String>();
+                                hashMap.put("mail_id",email.getMail_id());
+                                hashMap.put("mail_subject",email.getMail_subject());
+                                hashMap.put("mail_date",email.getMail_date());
+                                hashMap.put("message_id",email.getMessage_id());
+                                hashMap.put("MIME_version",email.getMIME_version());
+                                hashMap.put("content",email.getContent());
+                                hashMap.put("content_transfer_conding",email.getContent_transfer_conding());
+                                hashMap.put("content_type",email.getContent_type());
+                                hashMap.put("flag",email.getFlag());
+                                hashMap.put("user_from",email.getUser_from());
+                                hashMap.put("user_to",email.getUser_to());
+                                hashMap.put("user_id",email.getUser_id());
+                                hashMap.put("sendate",email.getSendate());
+                                oos.writeObject(hashMap);
+                                oos.flush();
+                            }
+                            else if (info.indexOf("dele")==0){
 
                             }
+                            break;
                         }
                         break;
                 }

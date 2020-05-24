@@ -1,5 +1,6 @@
 package databaseAccess;
 
+import entity.Email;
 import entity.User;
 
 import java.sql.ResultSet;
@@ -29,5 +30,27 @@ public class Dao {
         String sql="select mail_id from mail where user_to=?";
         ResultSet rs=dataBase.exeQuery(sql,username);
         return rs;
+    }
+
+    public Email getEmail(String id) throws SQLException {
+        String sql="select * from mail where mail_id=?";
+        ResultSet rs=dataBase.exeQuery(sql,id);
+        Email email = new Email();
+        while (rs.next()){
+            email.setMail_id(rs.getString("mail_id"));
+            email.setUser_id(rs.getString("user_id"));
+            email.setUser_from(rs.getString("user_from"));
+            email.setUser_to(rs.getString("user_to"));
+            email.setMail_subject(rs.getString("mail_subject"));
+            email.setContent(rs.getString("content"));
+            email.setMail_date(rs.getString("mail_date"));
+            email.setMIME_version(rs.getString("MIME_version"));
+            email.setContent_type(rs.getString("content_type"));
+            email.setContent_transfer_conding(rs.getString("content_transfer_conding"));
+            email.setSendate(rs.getString("sendate"));
+            email.setMessage_id(rs.getString("message_id"));
+            email.setFlag(rs.getString("flag"));
+        }
+        return email;
     }
 }
