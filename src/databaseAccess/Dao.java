@@ -53,4 +53,10 @@ public class Dao {
         }
         return email;
     }
+
+    public void delete(String id){
+        String sql="update mail set flag='0' where user_to=?";
+        dataBase.updateQuery(sql,id);
+
+    }
 }

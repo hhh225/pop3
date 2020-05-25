@@ -12,7 +12,6 @@ public class Runner1 extends Thread{
     public Runner1(int port) throws IOException {
         this.port=port;
         serverSocket=new ServerSocket(port);
-
     }
 
     @Override

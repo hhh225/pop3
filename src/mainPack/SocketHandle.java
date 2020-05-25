@@ -13,8 +13,6 @@ import java.util.HashMap;
 
 public class SocketHandle extends Thread{
     Socket socket;
-    InputStream is;
-    OutputStream os;
     String info;
     String state="identification";
     String username;
@@ -33,61 +31,84 @@ public class SocketHandle extends Thread{
         super.run();
         String info;
         try{
-            is=socket.getInputStream();
-            os=socket.getOutputStream();
-            PrintWriter pw=new PrintWriter(os);
-            BufferedReader br=new BufferedReader(new InputStreamReader(is));
+
+            System.out.println("start");
+            InputStream is=socket.getInputStream();
+            System.out.println("start");
+            OutputStream os=socket.getOutputStream();
+            System.out.println("start");
             ObjectInputStream ois=new ObjectInputStream(is);
+            System.out.println("objectinput");
             ObjectOutputStream oos=new ObjectOutputStream(os);
-            pw.write("+OK Welcome\n");
-            pw.flush();
-            while(true){
+            System.out.println("objectoutput");
+            oos.writeObject("+OK Welcome");
+            oos.flush();
+//            PrintWriter pw=new PrintWriter(os);
+//            System.out.println("start");
+//            BufferedReader br=new BufferedReader(new InputStreamReader(is));
+//            System.out.println("bufferedreader start");
+//            pw.write("+OK Welcome\n");
+//            pw.flush();
+            int breakup=0;
+            while(breakup==0){
                 switch (state){
                     case "identification":
                         if (count==0){
-                            info=br.readLine();
-                            if (info.indexOf("user")==0){
+                            info=(String)ois.readObject();
+                            if (info.indexOf("quit")==0){
+                                socket.close();
+                                breakup=1;
+                            }
+                            else if (info.indexOf("user")==0){
                                 username=info.substring(5);
                                 user=dao.verifyUsername(username);
                                 if (user.getUserid()==null){
-                                    pw.write("-ERR No username\n");
-                                    pw.flush();
+//                                    pw.write("-ERR No username\n");
+//                                    pw.flush();
+                                    oos.writeObject("-ERR No username");
+                                    oos.flush();
                                 }
                                 else {
-                                    pw.write("+OK\n");
-                                    pw.flush();
+//                                    pw.write("+OK\n");
+//                                    pw.flush();
+                                    System.out.println("username:"+username);
+                                    oos.writeObject("+OK");
+                                    oos.flush();
                                     count++;
                                 }
                             }
+
                             else {
-                                pw.write("-ERR Unknown command\n");
-                                pw.flush();
+                                oos.writeObject("-ERR Unknown command");
+                                oos.flush();
                             }
                         }
                         else if (count==1){
-                            info=br.readLine();
+                            info=(String)ois.readObject();
                             if (info.indexOf("pass")==0){
                                 pass=info.substring(5);
                                 if (!pass.equals(user.getPassword())){
-                                    pw.write("-ERR Password failed\n");
-                                    pw.flush();
+                                    oos.writeObject("-ERR Password failed");
+                                    oos.flush();
                                 }
                                 else {
-                                    pw.write("-OK\n");
-                                    pw.flush();
+                                    System.out.println("password:"+pass);
+                                    oos.writeObject("+OK");
+                                    oos.flush();
                                     count=0;
                                     state="operation";
                                 }
                             }
                             else {
-                                pw.write("-ERR Unknown command\n");
-                                pw.flush();
+                                oos.writeObject("-ERR Unknown command");
+                                oos.flush();
                             }
                         }
                         break;
                     case "operation":
+
                         while (true){
-                            info=br.readLine();
+                            info=(String)ois.readObject();
                             if (info.equals("list")){
                                 ArrayList<String> ids=new ArrayList<String>();
                                 ResultSet rs=dao.list(user.getUsername());
@@ -118,14 +139,19 @@ public class SocketHandle extends Thread{
                                 oos.flush();
                             }
                             else if (info.indexOf("dele")==0){
+                                String id=info.substring(5);
 
                             }
-                            break;
+                            else if (info.equals("quit")){
+                                state="identification";
+                                break;
+                            }
+
                         }
                         break;
                 }
             }
-        } catch (IOException | SQLException e) {
+        } catch (IOException | SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
