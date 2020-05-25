@@ -10,9 +10,10 @@ public class Android {
         Socket socket=new Socket("106.54.231.32",8087);
         InputStream is=socket.getInputStream();
         OutputStream os=socket.getOutputStream();
-        ObjectInputStream ois=new ObjectInputStream(is);
         ObjectOutputStream oos=new ObjectOutputStream(os);
-        String username = "user0";       //用户名
+        ObjectInputStream ois=new ObjectInputStream(is);
+
+        String username = "user3";       //用户名
         String pass = "1234567";         //密码
         String info;
         info=(String)ois.readObject();      //第一次，刚连接到这里接受信息
@@ -43,6 +44,8 @@ public class Android {
                     oos.writeObject("retr "+id);
                     //hashMap保存了一封邮件，可以用hashMap.get("mail_subject")的方式获得邮件标题，content、sendate也一样，和数据库字段名相同
                     HashMap<String,String> hashMap=(HashMap<String, String>)ois.readObject();
+                    System.out.println("mail_id:"+hashMap.get("mail_id"));
+                    System.out.println("subject:"+hashMap.get("mail_subject"));
                 }
                 socket.close();
                 break;

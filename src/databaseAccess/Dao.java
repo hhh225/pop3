@@ -27,13 +27,13 @@ public class Dao {
     }
 
     public ResultSet list(String username){
-        String sql="select mail_id from mail where user_to=?";
+        String sql="select mail_id from mail where user_to=? and flag='0'";
         ResultSet rs=dataBase.exeQuery(sql,username);
         return rs;
     }
 
     public Email getEmail(String id) throws SQLException {
-        String sql="select * from mail where mail_id=?";
+        String sql="select * from mail where mail_id=? ";
         ResultSet rs=dataBase.exeQuery(sql,id);
         Email email = new Email();
         while (rs.next()){
